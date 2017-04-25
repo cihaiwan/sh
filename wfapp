@@ -1,0 +1,23 @@
+#!/bin/sh
+
+function login(){
+	clear
+	ssh root@117.149.224.191 -p 51133
+}
+
+PS3="select option:"
+select option in "Login" "Exit"
+do
+	case $option in 
+		"Exit")
+			break;;
+		"Login")
+			login
+			break;;
+		*)
+			clear
+			"Sorry , wrong selection"
+			;;
+	esac
+done
+
