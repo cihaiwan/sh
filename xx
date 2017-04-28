@@ -1,0 +1,25 @@
+#!/bin/sh
+
+updatefile=$(git log  -1 --name-status |
+awk '$2 !~/.gitignore/ {if((NR>6)){huhao="";if($1=="M"||$1=="A")fuhao="+";else if($1=="D")fuhao="-";print fuhao, $2}}')
+echo $updatefile
+for i in $(echo $updatefile)
+do
+	echo $i
+	#f=$(awk '{print $2}')
+	#o=$(awk '{print $1}')
+	
+	#j=${i##*/}
+	#t="f"
+	#if [ "X$j"=="X" ]
+	#then
+	#	t="d"	
+	#fi
+	#k=${j%.*}
+	#echo $k
+	#f=find E:/Users/Administrator/Workspaces/"MyEclipse 10"/jxhbwf/WebRoot -name $k*  -print  
+	#echo "$t"
+done
+
+
+
