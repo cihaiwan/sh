@@ -1,25 +1,79 @@
 #!/bin/sh
 
-updatefile=$(git log  -1 --name-status |
-awk '$2 !~/.gitignore/ {if((NR>6)){huhao="";if($1=="M"||$1=="A")fuhao="+";else if($1=="D")fuhao="-";print fuhao, $2}}')
-echo $updatefile
-for i in $(echo $updatefile)
-do
-	echo $i
-	#f=$(awk '{print $2}')
-	#o=$(awk '{print $1}')
+function archive(){
+	archiveDir=$(echo f:/archive/$(date "+%Y%m%d") )
+	ztemp=$archiveDir/temp
+	loginfo=$ztemp/loginfo
+	sourcelist=$ztemp/sourcelist
+	msourcelist=$ztemp/msourcelist
+	destlist=$archiveDir/dest
+	dest=$destlist 
+	updatelist=./updatelist
+	currentdirupdatelist=$archiveDir/updatelist
+
+	if [ ! -d $archiveDir ]
+	then
+		mkdir -p $archiveDir
+	fi
+
+	if [ ! -d $archiveDir/temp ]
+	then
+		mkdir -p $archiveDir/temp
+	fi
 	
-	#j=${i##*/}
-	#t="f"
-	#if [ "X$j"=="X" ]
-	#then
-	#	t="d"	
-	#fi
-	#k=${j%.*}
-	#echo $k
-	#f=find E:/Users/Administrator/Workspaces/"MyEclipse 10"/jxhbwf/WebRoot -name $k*  -print  
-	#echo "$t"
-done
+	git log HEAD@{${1:-0}} -1 --name-status --pretty=format:"%ad" --date=format:"%Y%m%d%H%M$S" > $loginfo
+
+	modifieddate=$archiveDir/$(sed -n "1p" $loginfo)
+	 awk '$2~/^WebRoot/ ' $loginfo > $sourcelist 
+	sed -n '/^A/p' $sourcelist > $updatelist 
+	echo "                                                      " >> $updatelist
+	echo "                                                      " >> $updatelist
+	echo "                                                      " >> $updatelist
+	echo "                                                      " >> $updatelist
+	sed  -n '/^M/p' $sourcelist >>$updatelist 
+	echo "                                                      " >> $updatelist
+	echo "                                                      " >> $updatelist
+	echo "                                                      " >> $updatelist
+	echo "                                                      " >> $updatelist
+	sed -n  '/^D/p' $sourcelist >> $updatelist
+	cp $updatelist $currentdirupdatelist
+	awk '$1~/^[AM]/ {print $2}' $updatelist > $msourcelist
+	c=$(awk 'END{print FNR;}' $msourcelist)
+	basecount=50
+	if [ -f $modifieddate.zip ]
+	then
+		rm -rf $modifieddate.zip
+	fi
+	
+	for (( i=0; i <= ((c/basecount)); i++ ))
+	do
+		beginline=$((i*basecount+1))
+		endline=$((beginline+basecount-1))
+		zip $modifieddate.zip $(eval sed -n \'$beginline,${endline}p\' $msourcelist ) $updatelist 	
+	done
+	if [ -f $dest.zip ]
+	then
+		rm -rf $dest.zip
+	fi
+	cp $modifieddate.zip  $dest.zip
+	trap "rm -rf $updatelist $ztemp/ " EXIT
+}
 
 
+archive $@
+function backup(){
+	updatlist=$1
+	
+	
+	
+}
+
+function updateopt(){
+	sourcedir="F:/archive/20170430/"
+	destdir="E:/apache-tomcat-7.0.57/jxhbwf/"
+	sourcedir=$sourcedir "dest.zip"
+	unzip $sourcedir -d .
+	
+	
+}
 
